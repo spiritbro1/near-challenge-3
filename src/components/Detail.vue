@@ -6,7 +6,7 @@
                     <b-card class="content-left mb-3" no-body>
                         <!--data:image/svg+xml;charset=UTF-8,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17cb7089c7d text %7B fill:'%23DFE1E6';font-weight:bold;font-family:Poppins, monospace;font-size:50pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17cb7089c7d'%3E%3Crect width='200' height='200' fill='%23EBECF0'%3E%3C/rect%3E%3Cg%3E%3Ctext x='44.421875' y='118.5' fill='%23DFE1E6'%3E%23${tokenId}%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E-->
 
-                        <b-card-img class="nft-image" :class="{ 'pixelated': isPixelated}" v-if="!loadingData" v-bind:src="utils.nftIpfsLink(nftData.image) || `data:image/svg+xml;charset=UTF-8,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17cb7089c7d text %7B fill:'%23DFE1E6';font-weight:bold;font-family:Poppins, monospace;font-size:50pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17cb7089c7d'%3E%3Crect width='200' height='200' fill='%23EBECF0'%3E%3C/rect%3E%3Cg%3E%3Ctext x='44.421875' y='118.5' fill='%23DFE1E6'%3E%23${tokenId}%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E`" alt="image"></b-card-img>
+                        <b-card-img class="nft-image" :class="{ 'pixelated': isPixelated}" v-if="!loadingData" v-bind:src="imajin.indexOf('ipfs') > -1 ? imajin : `data:image/svg+xml;charset=UTF-8,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17cb7089c7d text %7B fill:'%23DFE1E6';font-weight:bold;font-family:Poppins, monospace;font-size:50pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17cb7089c7d'%3E%3Crect width='200' height='200' fill='%23EBECF0'%3E%3C/rect%3E%3Cg%3E%3Ctext x='44.421875' y='118.5' fill='%23DFE1E6'%3E%23${tokenId}%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E`" alt="image"></b-card-img>
                         <b-skeleton-img v-else></b-skeleton-img>
                         <b-card-body v-if="nftData.attributes && !loadingData" class="list-attr p-0 is-flex space-between">
                             <b-card class="mt-3 attr-item" no-body v-for="(it, key) in nftData.attributes" :key="key">
@@ -37,21 +37,21 @@
                     <b-card v-else no-body class="nft-info mb-3">
                         <div>
                             <b-card-body class="p-0">
-                                <b-card-text v-if="ftSymbol || nftName" class="mb-4 mt-1 nft-acc"><b-link :href="`/`"><b-icon icon="chevron-double-left"></b-icon> {{ ftSymbol }} - {{ nftName }}</b-link></b-card-text>
-                                <b-skeleton v-else animation="fade" width="50px"></b-skeleton>
+                                <b-card-text class="mb-4 mt-1 nft-acc"><b-link :href="`/`"><b-icon icon="chevron-double-left"></b-icon> Explorer</b-link></b-card-text>
+                              
                                 <div class="is-flex space-between">
                                     <div>
-                                        <b-card-title v-if="nftData.name || tokenId" class="nft-name mb-3">{{ nftData.name || `# ${tokenId}` }}</b-card-title>
+                                        <b-card-title v-if="nftName" class="nft-name mb-3">{{  `${nftName} #${tokenId}` }}</b-card-title>
                                         <b-skeleton v-else animation="fade" width="100px" heihgt="36px"></b-skeleton>
                                         <b-card-text class="mb-4 nft-address">
                                             <b-card-text class="is-flex mb-2">
                                                 <span class="equal">Owned by:</span> 
-                                                <b-link v-if="chainId && owner" :href="utils.addressLink(chainId, owner)" target="_blank">{{ utils.truncate(owner, 20) }}</b-link>
+                                                <b-link v-if="owner" :href="`https://explorer.testnet.near.org/accounts/${owner}`" target="_blank">{{ owner }}</b-link>
                                                 <b-skeleton v-else animation="fade" width="160px"></b-skeleton>
                                             </b-card-text>
                                             <b-card-text class="is-flex">
                                                 <span class="equal">Contract:</span>
-                                                <b-link v-if="chainId && nft" :href="utils.addressLink(chainId, nft)" target="_blank">{{ utils.truncate(nft, 20) }}</b-link>
+                                                <b-link v-if="nft" :href="`https://explorer.testnet.near.org/accounts/${nft}`" target="_blank">{{ nft }}</b-link>
                                                 <b-skeleton v-else animation="fade" width="160px"></b-skeleton>
                                             </b-card-text>
                                         </b-card-text>
@@ -70,7 +70,7 @@
                                             </span>
                                         </div>
                                         <div v-if="!loadingData">
-                                            <b-button @click="$bvModal.show('bid-nft')" :disabled="isBidded" v-if="owner !== address" class="btn-custom btn-market-order">Make Offer</b-button>
+                                            <!-- <b-button @click="$bvModal.show('bid-nft')" :disabled="isBidded" v-if="owner !== address" class="btn-custom btn-market-order">Make Offer</b-button> -->
 
                                             <b-btn
                                                 v-if="owner !== address && isPublished"
@@ -140,55 +140,7 @@
                             </b-row>
                         </b-card>
                     </div>
-                    <div class="best-offer mb-3">
-                        <b-card no-body v-if="!loadingData">
-                            <div class="head is-flex space-between">
-                                <b-card-text class="mb-0 highlight-text-color"> Best Offer </b-card-text>
-                                <b-card-text class="total-offer">Total {{ utils.bigToCommon(bidSize.add(sizeOfListMarket), 0, 0) }} offers</b-card-text>
-                            </div>
-                            
-                            <b-row class="p-3" v-if="bestPrice.gte(bestBidMarketPrice) && bestPrice.gt(0)"> 
-                                <b-col>
-                                    <b-card-text class="mb-0 text-address">Address</b-card-text>
-                                    <b-link target="_blank" :href="utils.addressLink(chainId, bestBidder)">{{ utils.truncate(bestBidder, 20) }}</b-link>
-                                </b-col>
-                                <b-col>
-                                    <b-card-text class="mb-0 text-price">Price ({{ ftSymbol }})</b-card-text>
-                                    <b-card-text class="text-balance highlight-text-color">{{ utils.bigToCommon(bestPrice, ftDecimals) }}</b-card-text>                                    
-                                </b-col>
-                                <div v-if="owner === address">
-                                    <div>
-                                        <b-button @click="$bvModal.show('sell-nft')" class="btn-custom btn-sell mr-3" :disabled="(isPublished && (owner === address))">Sell  <b-icon v-if="(isPublished && (owner === address))" icon="info-circle-fill" v-b-tooltip.hover.top="`You have to remove your order before selling the item`"></b-icon></b-button>
-                                    </div>
-                                </div>
-                            </b-row>
-                            <b-row class="p-3" v-if="bestBidMarketPrice.gt(bestPrice)"> 
-                                <b-col>
-                                    <b-card-text class="mb-0 text-address">Address</b-card-text>
-                                    <b-link target="_blank" :href="utils.addressLink(chainId, bestBidMarketOwner)">{{ utils.truncate(bestBidMarketOwner, 20) }}</b-link>
-                                </b-col>
-                                <b-col>
-                                    <b-card-text class="mb-0 text-price">Price ({{ ftSymbol }})</b-card-text>
-                                    <b-card-text class="text-balance highlight-text-color">{{ utils.bigToCommon(bestBidMarketPrice, ftDecimals) }}</b-card-text>                                    
-                                </b-col>
-                                <div v-if="owner === address">
-                                    <div>
-                                        <b-button @click="$bvModal.show('sell-market')" class="btn-custom btn-sell mr-3" :disabled="(isPublished && (owner === address))">Sell  <b-icon v-if="(isPublished && (owner === address))" icon="info-circle-fill" v-b-tooltip.hover.top="`You have to remove your order before selling the item`"></b-icon></b-button>
-                                    </div>
-                                </div>
-                            </b-row>
-                            <div class="best-offer-empty" v-if="bidSize.add(sizeOfListMarket).eq(0)">
-                                <b-card-img :src="require('../assets/images/nologo.svg')" alt="Image"></b-card-img>
-                                <div class="best-offer-empty-text">No Offer Yet.</div>
-                            </div>
-                        </b-card>
-                        <b-skeleton-table
-                            v-else
-                            :rows="1"
-                            :columns="3"
-                            :table-props="{ bordered: true, striped: true }"
-                            ></b-skeleton-table>
-                    </div>
+                   
 
                 </b-col>
             </b-row>
@@ -233,9 +185,8 @@
 </template>
 <script>
 import { ethers } from 'ethers'
-import axios from 'axios'
 import utils from '../utils'
-import { Market, Multicall } from '@bazarion/sdk'
+import {  Multicall } from '@bazarion/sdk'
 import Bid from './Bid.vue'
 import Ask from './Ask.vue'
 import Buy from './Buy.vue'
@@ -244,8 +195,7 @@ import SellMarket from './SellMarket.vue'
 import UpdateBid from './UpdateBid.vue'
 import UpdateAsk from './UpdateAsk.vue'
 import ImportTokenAlert from './ImportTokenAlert.vue'
-import urljoin from 'url-join'
-import config from '../config'
+import * as nearApi from "near-api-js";
 
 export default {
     name: 'Detail',
@@ -253,6 +203,7 @@ export default {
         Bid, UpdateBid, Ask, UpdateAsk, Buy, Sell, ImportTokenAlert, SellMarket
     },
     data: () => ({
+        imajin:"",
         showBid: false,
         isBidded: false,
         address: '',
@@ -299,48 +250,25 @@ export default {
     },
     created: async function () {
         this.tokenId = this.$route.params.id
-        let { ft, nft, chainId } = this.getMarketConfig()
-        this.chainId = chainId
+             const nearRpc = new nearApi.providers.JsonRpcProvider({url: "https://rpc.testnet.near.org"});
 
-        this.provider = await this.getProvider(parseInt(chainId))
-        this.market = await Market.setMarket(ft, nft, this.provider)
-
-        this.marketAddress = this.market.market
-        this.ft = ethers.utils.getAddress(this.market.ft)
-        this.nft = ethers.utils.getAddress(this.market.nft)
-        this.isNative = this.market.isNative
-        this.address = this.market.address
-
-        let uri = await this.market.tokenURI(this.tokenId)
-
-        try {
-            let { data } = await axios.get(this.utils.nftIpfsLink(uri))
-            data.attributes = (data.attributes || []).filter((el) => {
-                return el.trait_type !== 'id' && el.value.trim()
-                    && el.trait_type !== 'name'
-                    && el.trait_type !== 'image'
-            })
-            this.nftData = data
-        } catch (e) {
-            console.log(e)
-        }
-
-        await this.getMarketInfo()
-
-        try {
-            let item = await axios.get(urljoin(config.apiBaseUrl, `/api/${this.chainId}/data/${this.nft}/get/${this.tokenId}`))
-            this.nftData.attributes = this.nftData.attributes.map(attr => {
-                attr.rarity = item.data.data[attr.value] * 100 / item.data.totalSupply
-                return attr
-            })
-        } catch(e) {
-            console.log(e)
-        }
-
-        let b = this.utils.checkTokenAlert(this.chainId, this.ft, this.nft)
-        if (b) {
-            this.$bvModal.show('import-token-alert')
-        }
+            const account = new nearApi.Account({
+                    provider: nearRpc,
+                    networkId: "testnet",
+                    signer: process.env.VUE_APP_CONTRACT,
+                    headers:  {}
+                },
+                process.env.VUE_APP_CONTRACT);
+           const data=await account.viewFunction(
+                process.env.VUE_APP_CONTRACT,
+                "nft_token",
+                {token_id: this.tokenId}
+            );
+            this.owner=data.owner_id
+            this.nftName=data.metadata.title
+            this.nft=process.env.VUE_APP_CONTRACT;
+            this.imajin=data.metadata.media;
+            console.log(data)
         this.loadingData = false
 
     }, 

@@ -9,7 +9,7 @@ import utils from './utils'
 import { ethers } from 'ethers'
 import { constants } from '@bazarion/sdk'
 import stores from './stores'
-import config from './config'
+import config from './confidg'
 
 const NETWORKS = constants.NETWORKS
 
