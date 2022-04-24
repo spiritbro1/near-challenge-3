@@ -592,7 +592,8 @@ imgType:"",
 imgName:"",
 prev:0,
 next:5,
-account:""
+account:"",
+tokenId:""
   }),
   updated: async function () {
     this.$nextTick().then(() => {
@@ -640,7 +641,7 @@ account:""
   this.next=total;
   const getAllNFT=await this.contract.getAllNFT({prev:0,next:this.next});
   this.items=getAllNFT;
-  console.log(this.items)
+  // console.log(this.items)
     } else {
        const nearRpc = new nearAPI.providers.JsonRpcProvider({url: "https://rpc.testnet.near.org"});
 
